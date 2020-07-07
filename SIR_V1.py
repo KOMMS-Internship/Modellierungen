@@ -9,8 +9,9 @@ DELTA = .1
 s = 1 - I_START - R_START
 i = I_START
 r = R_START
-
-
+gesund = []
+krank = []
+genesen = []
 print(str(s) +"; "+ str(i) +"; "+ str(r) +" gesamt: "+str(s+i+r))
 for index in range(10):
     sNeu = s - BETA * s * i
@@ -19,4 +20,10 @@ for index in range(10):
     s = sNeu
     i = iNeu
     r = rNeu
-    print(str(s) +"; "+ str(i) +"; "+ str(r) +" gesamt: "+str(s+i+r))
+    gesund.append(s)
+    krank.append(i)
+    genesen.append(r)
+    plt.plot(xaxis,gesund,'r')
+    plt.plot(xaxis, krank, 'k')
+    plt.plot(xaxis, genesen, 'b')
+plt.show()
