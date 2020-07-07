@@ -61,4 +61,3 @@ for i in range(PERSONENZAHL):
 
 for i in range(PERSONENZAHL):
     print(str(personen[i]))
-
