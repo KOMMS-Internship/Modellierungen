@@ -5,13 +5,13 @@ from matplotlib import pyplot as plt
 steps = 100
 persons = 100
 houses = 30
-contact_restrictions = 4
+contact_restrictions = 4 # If no restriction planned set to 0
 infected_start = 1
 naughty_start = 1
 recovered_start = 0
 immunity_time = True  # Never expires
-disinfection_prob = 10
-infection_prob = 0.9
+disinfection_prob = 0.01
+infection_prob = 0.09
 
 CA = CellularAutomat.Simulation(persons, houses, contact_restrictions, infected_start, naughty_start, recovered_start, immunity_time, disinfection_prob, infection_prob)
 
