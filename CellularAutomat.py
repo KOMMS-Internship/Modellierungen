@@ -4,6 +4,7 @@ wachsen besonders beschleunigt wird die Zahl durch Lockerungen
 """
 
 import random
+random.seed(654604)
 import sys
 
 
@@ -25,7 +26,7 @@ class HumanBeing:
             home = random.choice(self.simu.city)
         home.append(self)
 
-        if self.immunity:
+        if self.immunity and self.immunity is not True:
             self.immunity -= 1
 
         if self.infected and random.randint(0, self.simu.disinfection) == 0:
@@ -35,7 +36,7 @@ class HumanBeing:
 
 class Simulation:
     def __init__(self, persons: int, houses: int = 30, contact_restrictions: int = 0, infected_start: int = 1,
-                 naughty_start: int = 1, recovered_start: int = 0, immunity_time: int = sys.maxsize,
+                 naughty_start: int = 1, recovered_start: int = 0, immunity_time: int = True,
                  disinfection_prob: int = 5, infection_prob: int = 0.9):
         if not contact_restrictions:
             contact_restrictions = persons
