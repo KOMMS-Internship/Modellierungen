@@ -8,13 +8,14 @@ import sys
 
 
 class HumanBeing:
-    def __init__(self, city: list, contact_restriction: int, infected: bool = False, naughty: bool = False,
+    def __init__(self, city: list, simu, contact_restriction: int, infected: bool = False, naughty: bool = False,
                  immune: int = 0):
         self.naughty = naughty
         self.infected = infected
         self.city = city
         self.contact_restriction = contact_restriction
         self.immunity = immune
+        self.simu = simu
         self.step()
 
     def step(self):
@@ -28,18 +29,23 @@ class HumanBeing:
         if self.immunity:
             self.immunity -= 1
 
-        if self.infected and random.randint(0, 5) == 0:
+        if self.infected and random.randint(0, self.simu.disinfection) == 0:
             self.infected = False
+            self.immunity = self.simu.immunity_time
 
 
 class Simulation:
     def __init__(self, persons: int, houses: int = 30, contact_restrictions: int = 0, infected_start: int = 1,
-                 naughty_start: int = 1, recovered_start: int = 0, immunity_time: int = sys.maxsize):
+                 naughty_start: int = 1, recovered_start: int = 0, immunity_time: int = sys.maxsize,
+                 disinfection_prob: int = 5, infection_prob: int = 0.9):
         if not contact_restrictions:
             contact_restrictions = persons
+        self.disinfection = disinfection_prob
+        self.infection_prob = infection_prob
+        self.immunity_time = immunity_time
         self.houses = houses
         self.city = [[] for _ in range(self.houses)]
-        self.human_beings = [HumanBeing(self.city, contact_restrictions) for _ in range(persons)]
+        self.human_beings = [HumanBeing(self.city, self, contact_restrictions) for _ in range(persons)]
         for _ in range(infected_start):
             random.choice(self.human_beings).infected = True
         for _ in range(naughty_start):
@@ -69,4 +75,26 @@ class Simulation:
 
         for i in self.human_beings:
             i.step()
+
+        for house in self.city:
+            states = [i.infected for i in house]
+            if True in states:
+                for i in house:
+                    if random.randint(0.0, self.infection_prob) == 1:
+                        i.infected = True
+
         return self.s, self.i, self.r
+
+    def steps(self, steps):
+        susceptible = []
+        infected = []
+        recovered = []
+
+        for i in range(steps):
+            states = self.step()
+
+            susceptible.apend(states[0])
+            infected.append(states[1])
+            recovered.append(states[2])
+
+        return susceptible, infected, recovered

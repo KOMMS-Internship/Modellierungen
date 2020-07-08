@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """
 Fun fact man kann auch mit Emojis programmieren (oder griechischen Buchstaben) 😉
 """

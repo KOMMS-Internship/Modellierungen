@@ -2,4 +2,5 @@ import CellularAutomat
 
 CA = CellularAutomat.Simulation(100)
 
-print(CA.step())
+for i in range(0, 100):
+    print(CA.step())
