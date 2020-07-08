@@ -18,11 +18,12 @@ class HumanBeing:
         self.step()
 
     def step(self):
+        home = random.choice(self.city)
         while not self.naughty:
-            home = random.choice(self.city)
             if len(home) < self.contact_restriction:
-                home.inhabitants.append(self)
                 break
+            home = random.choice(self.city)
+        home.append(self)
 
         if self.immunity:
             self.immunity -= 1
@@ -30,9 +31,10 @@ class HumanBeing:
         if self.infected and random.randint(0, 5) == 0:
             self.infected = False
 
+
 class Simulation:
     def __init__(self, persons: int, houses: int = 30, contact_restrictions: int = 0, infected_start: int = 1,
-                 naughty_start: int = 1, recovered_start: int = 0, immunity_time:int = sys.maxsize):
+                 naughty_start: int = 1, recovered_start: int = 0, immunity_time: int = sys.maxsize):
         if not contact_restrictions:
             contact_restrictions = persons
         self.houses = houses
@@ -59,7 +61,7 @@ class Simulation:
                 self.i += 1
 
         for index in self.human_beings:
-            if index.immune:
+            if index.immunity:
                 self.r += 1
         self.s = len(self.human_beings) - self.i - self.r
 
@@ -67,3 +69,4 @@ class Simulation:
 
         for i in self.human_beings:
             i.step()
+        return self.s, self.i, self.r
