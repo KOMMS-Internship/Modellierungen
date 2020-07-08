@@ -34,7 +34,7 @@ class HumanBeing:
 
 
 class Simulation:
-    def __init__(self, persons: int, houses: int = 10, contact_restrictions: int = 0, infected_start: int = 1,
+    def __init__(self, persons: int, houses: int = 30, contact_restrictions: int = 0, infected_start: int = 1,
                  naughty_start: int = 1, recovered_start: int = 0, immunity_time: int = sys.maxsize,
                  disinfection_prob: int = 5, infection_prob: int = 0.9):
         if not contact_restrictions:
