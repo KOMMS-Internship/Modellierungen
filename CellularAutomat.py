@@ -28,7 +28,7 @@ class HumanBeing:
         if self.immunity and self.immunity is not True:
             self.immunity -= 1  # There is the possibility to get susceptible again
 
-        if self.infected and random.randint(0, self.simu.disinfection*10) == 0:
+        if self.infected and random.randint(0, int(self.simu.disinfection*100)) == 0:
             self.infected = False  # Getting recovered is probability driven
             self.immunity = self.simu.immunity_time
 
