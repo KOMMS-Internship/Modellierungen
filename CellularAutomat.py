@@ -4,7 +4,7 @@ wachsen besonders beschleunigt wird die Zahl durch Lockerungen
 """
 
 import random
-random.seed(35644)  # To be able to reproduce the results
+random.seed(35)  # To be able to reproduce the results
 
 
 class HumanBeing:
@@ -20,7 +20,7 @@ class HumanBeing:
     def step(self):
         home = random.choice(self.simu.city)
         while not self.naughty:
-            if len(home) <= self.contact_restriction:
+            if len(home) < self.contact_restriction:
                 break
             home = random.choice(self.simu.city)
         home.append(self)
@@ -36,7 +36,7 @@ class HumanBeing:
 class Simulation:
     def __init__(self, persons: int, houses: int = 30, contact_restrictions: int = 0, infected_start: int = 1,
                  naughty_start: int = 1, recovered_start: int = 0, immunity_time: int = True,
-                 disinfection_prob: int = 0.1, infection_prob: int = 0.9):
+                 disinfection_prob: float = 0.1, infection_prob: float = 0.9):
         if not contact_restrictions:
             contact_restrictions = persons
         self.disinfection = disinfection_prob
@@ -46,7 +46,10 @@ class Simulation:
         self.city = [[] for _ in range(self.houses)]  # Could also be interpreted as many 5 meter zones
         self.human_beings = [HumanBeing(self, contact_restrictions) for _ in range(persons)]
         for _ in range(infected_start):  # choosing people with special roles for the beginning
-            random.choice(self.human_beings).infected = True
+            human = random.choice(self.human_beings)#.infected = True
+            while human.infected:
+                continue
+            human.infected = True
         for _ in range(naughty_start):
             random.choice(self.human_beings).naughty = True
         for _ in range(recovered_start):
@@ -79,7 +82,7 @@ class Simulation:
             states = [i.infected for i in house]
             if True in states:
                 for i in house:
-                    if random.randint(0, int(self.infection_prob*100)) == 1 and not i.immunity:
+                    if random.randint(0, int(self.infection_prob*100)) == 0 and not i.immunity:
                         i.infected = True
 
         return self.s, self.i, self.r
