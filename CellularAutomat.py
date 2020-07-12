@@ -46,10 +46,7 @@ class Simulation:
         self.houses = houses
         self.city = [[] for _ in range(self.houses)]  # Could also be interpreted as many 5 meter zones
         self.human_beings = [HumanBeing(self, contact_restrictions) for _ in range(persons)]
-        for _ in range(infected_start):  # choosing people with special roles for the beginning
-            human = random.choice(self.human_beings)  # .infected = True
-            while human.infected:
-                human = random.choice(self.human_beings)
+        for human in random.sample(infected_start):  # choosing people with special roles for the beginning
             human.infected = True
         for _ in range(naughty_start):
             random.choice(self.human_beings).naughty = True
