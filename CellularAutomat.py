@@ -4,7 +4,6 @@ wachsen besonders beschleunigt wird die Zahl durch Lockerungen
 """
 
 import random
-random.seed(35)  # To be able to reproduce the results
 
 
 class HumanBeing:
