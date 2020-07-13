@@ -40,7 +40,7 @@ class Simulation:
                  naughty_plus: int = 2):
         """
         :param persons: Population which will be simulated
-        :param houses: diffrent places to go will get more complicated. Can also be seen as 2 meter square areas
+        :param houses: different places to go will get more complicated. Can also be seen as 2 meter square areas
         :param contact_restrictions: how many people are allowed to meet will be ignored by the naughty people
         :param infected_start: how much people are infected at the beginning
         :param naughty_start: how much people do not care about the rules at the beginning
@@ -64,7 +64,8 @@ class Simulation:
         self.houses = houses
         self.city = [[] for _ in range(self.houses)]  # Could also be interpreted as many 5 meter zones
         self.human_beings = [HumanBeing(self, contact_restrictions) for _ in range(persons)]
-        for human in random.sample(self.human_beings, infected_start):  # choosing people with special roles for the beginning
+        for human in random.sample(self.human_beings, infected_start):
+            # choosing people with special roles for the beginning
             human.infected = True
         for _ in range(naughty_start):
             human = random.choice(self.human_beings)

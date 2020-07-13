@@ -1,8 +1,8 @@
 from matplotlib import pyplot as plt
-import basic_SIR
+import SIR_vaccine
 
 steps = 100
-SIR = basic_SIR.SIR(0.1)
+SIR = SIR_vaccine.SIR(0.1)
 
 susceptible, infected, recovered = SIR.steps(steps)
 xaxis = list(range(steps))
