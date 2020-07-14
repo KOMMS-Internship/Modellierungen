@@ -60,11 +60,13 @@ class Simulation:
             human.infected = True
         for human in random.sample(self.human_beings, naughty_start):
             human.naughty = True
-        for _ in range(recovered_start):
+        for human in random.sample([human for human in self.human_beings if not human.infected], recovered_start):
+            human.immunity = immunity_time
+        """for _ in range(recovered_start):
             human = random.choice(self.human_beings)
             while human.infected:
                 human = random.choice(self.human_beings)
-            human.immunity = immunity_time
+            human.immunity = immunity_time"""
 
         self.s = persons - infected_start - recovered_start
         self.i = infected_start
@@ -75,25 +77,27 @@ class Simulation:
             i.step()
 
         if change:
-            for _ in range(self.naughty_plus):
-                human = random.choice(self.human_beings)
-                timer = 0
-                while human.naughty and timer != 2 * len(self.human_beings):
-                    human = random.choice(self.human_beings)
-                    timer += 1
-                human.naughty = True
+            try:
+                for human in random.sample([human for human in self.human_beings if not human.naughty],
+                                           self.naughty_plus):
+                    human.naughty = True
+            except ValueError:
+                pass
 
-        for _ in range(int(self.naughty * self.naughty_plus_percent)+1):
-            human = random.choice(self.human_beings)
-            timer = 0
-            while human.naughty and timer != 2 * len(self.human_beings):
-                human = random.choice(self.human_beings)
-                timer += 1
-            human.naughty = True
+        naughty_plus = self.naughty * self.naughty_plus_percent
+        if naughty_plus < 1:
+            naughty_plus = 1
+        if naughty_plus + self.naughty >= 0.9 * len(self.human_beings):
+            naughty_plus = 0
+        try:
+            for human in random.sample([human for human in self.human_beings if not human.naughty], naughty_plus):
+                human.naughty = True
+        except ValueError:
+            pass
 
         try:
-            for human in random.sample([human for human in self.human_beings if not human.immunity and not human.infected],
-                                       self.vaccine_per_tick):
+            for human in random.sample([human for human in self.human_beings
+                                        if not human.immunity and not human.infected], self.vaccine_per_tick):
                 human.immunity = self.immunity_time
         except ValueError:
             pass
@@ -106,28 +110,21 @@ class Simulation:
                         i.infected = True
 
         self.s, self.i, self.r = 0, 0, 0  # Will be recalculated every step
-        for index in self.human_beings:
-            if index.infected:
-                self.i += 1
 
-        for index in self.human_beings:
-            if index.immunity:
-                self.r += 1
+        self.i = len([infected for infected in self.human_beings if infected.infected])
+        self.r = len([recovered for recovered in self.human_beings if recovered.immunity])
         self.s = (len(self.human_beings) - self.i) - self.r
 
-        self.naughty = len([i.naughty for i in self.human_beings if i.naughty])
+        self.naughty = len([naughty for naughty in self.human_beings if naughty.naughty])
 
         self.city = [[] for _ in range(self.houses)]
 
         return self.s, self.i, self.r, self.naughty
 
     def steps(self, steps):  # For plots mainly
-        susceptible = []
-        infected = []
-        recovered = []
-        naughty = []
+        susceptible, infected, recovered, naughty = [], [], [], []
 
-        for i in range(steps):
+        for _ in range(steps):
             states = self.step()
 
             susceptible.append(states[0])
