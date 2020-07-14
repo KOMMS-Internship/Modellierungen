@@ -1,42 +1,32 @@
-"""
-Die Fuzziness ist präsentiert durch naughty die Zahl dieser Leute sollte langsam aber je mehr es sind immer schneller
-wachsen besonders beschleunigt wird die Zahl durch Lockerungen
-"""
-
 import random
 
 
 class HumanBeing:
-    def __init__(self, simu, contact_restriction: int, infected: bool = False, naughty: bool = False,
+    def __init__(self, simulation, contact_restriction: int, infected: bool = False, naughty: bool = False,
                  immune: int = 0):
         self.naughty = naughty  # If someone if naughty he does not care about rules like contact restriction
         self.infected = infected
         self.contact_restriction = contact_restriction
         self.immunity = immune
-        self.simu = simu
+        self.simulation = simulation
         self.step()
 
     def step(self):
-        home = random.choice(self.simu.city)
-        while not self.naughty:
-            if len(home) < self.contact_restriction:
-                break
-            home = random.choice(self.simu.city)
-        home.append(self)
+        random.choice([home for home in self.simulation.city if len(home) < self.contact_restriction]).append(self)
 
         if self.immunity and self.immunity is not True:
             self.immunity -= 1  # There is the possibility to get susceptible again
 
-        if self.infected and random.randint(0, int(self.simu.disinfection*100)) == 0:
+        if self.infected and random.randint(0, int(self.simulation.disinfection * 100)) == 0:
             self.infected = False  # Getting recovered is probability driven
-            self.immunity = self.simu.immunity_time
+            self.immunity = self.simulation.immunity_time
 
 
 class Simulation:
     def __init__(self, persons: int, houses: int = 30, contact_restrictions: int = 0, infected_start: int = 1,
                  naughty_start: int = 1, recovered_start: int = 0, immunity_time: int = True,
                  disinfection_prob: float = 0.1, infection_prob: float = 0.9, vaccine_per_tick: int = 0,
-                 naughty_plus: int = 2):
+                 naughty_plus: int = 2, naughty_plus_percent: float = 0.5):
         """
         :param persons: Population which will be simulated
         :param houses: different places to go will get more complicated. Can also be seen as 2 meter square areas
@@ -49,29 +39,26 @@ class Simulation:
         :param infection_prob: how high is the probability to get infected by a person in one tick (1-)
         :param vaccine_per_tick: how many vaccines are available per tick
         :param naughty_plus: How many people get suddenly naughty if there is a positive change for them
+        :param naughty_plus_percent: Calculates how many people are naughty in the next step
         """
         if not contact_restrictions:
             contact_restrictions = persons
-        if recovered_start + infected_start >= persons:
-            raise Exception
+        if recovered_start + infected_start > persons:
+            raise OverflowError("More immune and infected people than the sum of all people")
         self.disinfection = disinfection_prob
         self.infection_prob = infection_prob
         self.immunity_time = immunity_time
         self.vaccine_per_tick = vaccine_per_tick
         self.naughty_plus = naughty_plus
         self.naughty = naughty_start
+        self.naughty_plus_percent = naughty_plus_percent
         self.houses = houses
         self.city = [[] for _ in range(self.houses)]  # Could also be interpreted as many 5 meter zones
         self.human_beings = [HumanBeing(self, contact_restrictions) for _ in range(persons)]
         for human in random.sample(self.human_beings, infected_start):
             # choosing people with special roles for the beginning
             human.infected = True
-        for _ in range(naughty_start):
-            human = random.choice(self.human_beings)
-            timer = 0
-            while human.naughty and timer != 2 * len(self.human_beings):
-                human = random.choice(self.human_beings)
-                timer += 1
+        for human in random.sample(self.human_beings, naughty_start):
             human.naughty = True
         for _ in range(recovered_start):
             human = random.choice(self.human_beings)
@@ -84,7 +71,8 @@ class Simulation:
         self.r = recovered_start
 
     def step(self, change: bool = False) -> tuple:
-        self.city = [[] for _ in range(self.houses)]
+        for i in self.human_beings:
+            i.step()
 
         if change:
             for _ in range(self.naughty_plus):
@@ -95,7 +83,7 @@ class Simulation:
                     timer += 1
                 human.naughty = True
 
-        for _ in range(self.naughty):
+        for _ in range(int(self.naughty * self.naughty_plus_percent)+1):
             human = random.choice(self.human_beings)
             timer = 0
             while human.naughty and timer != 2 * len(self.human_beings):
@@ -103,14 +91,12 @@ class Simulation:
                 timer += 1
             human.naughty = True
 
-        for i in self.human_beings:
-            i.step()
-
-        for _ in range(self.vaccine_per_tick):
-            human = random.choice(self.human_beings)
-            while human.infected and human.immunity:
-                human = random.choice(self.human_beings)
-            human.immunity = self.immunity_time
+        try:
+            for human in random.sample([human for human in self.human_beings if not human.immunity and not human.infected],
+                                       self.vaccine_per_tick):
+                human.immunity = self.immunity_time
+        except ValueError:
+            pass
 
         for house in self.city:
             states = [i.infected for i in house]
@@ -130,6 +116,8 @@ class Simulation:
         self.s = (len(self.human_beings) - self.i) - self.r
 
         self.naughty = len([i.naughty for i in self.human_beings if i.naughty])
+
+        self.city = [[] for _ in range(self.houses)]
 
         return self.s, self.i, self.r, self.naughty
 

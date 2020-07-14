@@ -1,7 +1,7 @@
 import CellularAutomat
 from matplotlib import pyplot as plt
 
-steps = 300
+steps = 100
 persons = 100
 houses = 30
 contact_restrictions = 0  # If no restriction planned set to 0
@@ -13,11 +13,13 @@ disinfection_prob = 1-0.1
 infection_prob = 1-0.9
 vaccine_per_tick = 2
 naughty_plus = 2
+naughty_plus_percent = 0.01
 
 health_system_border = 10
 
 CA = CellularAutomat.Simulation(persons, houses, contact_restrictions, infected_start, naughty_start, recovered_start,
-                                immunity_time, disinfection_prob, infection_prob, vaccine_per_tick, naughty_plus)
+                                immunity_time, disinfection_prob, infection_prob, vaccine_per_tick, naughty_plus,
+                                naughty_plus_percent)
 
 susceptible, infected, recovered, naughty = CA.steps(steps)
 xaxis = list(range(steps))
