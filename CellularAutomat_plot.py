@@ -11,7 +11,7 @@ recovered_start = 0
 immunity_time = True  # Never expires
 disinfection_prob = 1-0.1
 infection_prob = 1-0.9
-vaccine_per_tick = 2
+vaccine_per_tick = 0
 naughty_plus = 2
 naughty_plus_percent = 0.01
 

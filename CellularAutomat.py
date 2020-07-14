@@ -103,8 +103,7 @@ class Simulation:
             pass
 
         for house in self.city:
-            states = [i.infected for i in house]
-            if True in states:
+            if [human for human in house if human.infected]:
                 for i in house:
                     if random.randint(0, int(self.infection_prob * 100)) == 0 and not i.immunity:
                         i.infected = True
