@@ -23,9 +23,9 @@ class SIR:
         self.t = 0
 
     def step(self) -> tuple:
-        self.s = self.s - self.β * self.s * self.i * (1 - self.v)
-        self.i = self.i + self.β * self.s * self.i * (1 - self.v) - self.𝚫 * self.i
-        self.r = self.r + self.𝚫 * self.i
+        self.s, self.i, self.r = self.s - self.β * self.s * self.i * (1 - self.v), \
+                                 self.i + self.β * self.s * self.i * (1 - self.v) - self.𝚫 * self.i, \
+                                 self.r + self.𝚫 * self.i
         self.t += 1
         return self.s, self.i, self.r
 
