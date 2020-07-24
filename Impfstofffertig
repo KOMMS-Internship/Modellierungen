@@ -1,0 +1,18 @@
+
+from matplotlib import pyplot as plt
+import SIR_vaccine
+
+steps = 100
+SIR = SIR_vaccine.SIR(0.000001, β=0.6, 𝚫=0.15, recovered_percent=0.0, vaccine_percent=0.0)
+
+susceptible, infected, recovered, vaccine = SIR.steps(steps)
+xaxis = list(range(steps))
+plt.plot(xaxis, susceptible, "k", label="susceptible")
+plt.plot(xaxis, infected, "b", label="infected")
+plt.plot(xaxis, recovered, "r", label="recovered")
+plt.plot(xaxis,vaccine, "g", label="vaccinated")
+plt.legend()
+plt.title("COVID-19 simulation")
+plt.xlabel("time")
+plt.ylabel("percentage")
+plt.show()
