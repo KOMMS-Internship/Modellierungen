@@ -1,0 +1,53 @@
+
+
+# -*- coding: utf8 -*-
+"""
+Fun fact man kann auch mit Emojis programmieren (oder griechischen Buchstaben) 😉
+"""
+
+
+class SIR:
+    def __init__(self, start_infected_percent: float, recovered_percent: float = 0.0, β: float = 0.5, 𝚫: float = 0.1,
+                 vaccine_percent: float = 0.0):
+        """
+        :param start_infected_percent: How many percent of the people are infected at the beginning of the simulation
+        :param recovered_percent: how many percent of the people are immune at the beginning of the simulation
+        :param β: Infection rate
+        :param 𝚫: #Todo andresmatthias
+        :param vaccine_percent: How many percent of the people get there vaccine per tick (might be very small)
+        """
+        self.s = 1 - start_infected_percent - recovered_percent
+        self.i = start_infected_percent
+        self.r = recovered_percent
+        self.β = β
+        self.𝚫 = 𝚫
+        self.v = vaccine_percent
+        self.t = 0
+        self.impfrate = 0.01
+        self.ergebnis = 0
+
+    @property
+    def step(self):# -> tuple:
+        if self.r == 0.0025 or self.r >0.0025:
+            self.v += self.impfrate * self.s
+        self.s = self.s - self.β * self.s * self.i - self.impfrate * self.s
+        self.i = self.i + self.β * self.s * self.i - self.𝚫 * self.i
+        self.r = self.r + self.𝚫 * self.i
+        self.t += 1
+        if (self.v + self.r) == 0.8 or (self.v + self.r) > 0.8:
+            print(self.t)
+
+        return self.s, self.i, self.r, self.v
+
+    def steps(self, count: int) -> tuple:
+        susceptible = []
+        infected = []
+        recovered = []
+        vaccine = []
+        for _ in range(count):
+            output = self.step()
+            susceptible.append(output[0])
+            infected.append(output[1])
+            recovered.append(output[2])
+            vaccine.append(output[3])
+        return susceptible, infected, recovered, vaccine
